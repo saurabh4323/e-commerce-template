@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Woila Silver - Sterling Silver Jewelry",
+  title: "Celve Silver - Sterling Silver Jewelry",
   description: "Minimalist and affordable sterling silver jewelry crafted in India",
 };
 

@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "mongoose": "^8.19.2",
     "next": "16.0.0",
     "nodemailer": "^7.0.10",
     "react": "19.2.0",
