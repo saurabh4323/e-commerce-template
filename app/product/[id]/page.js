@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, use } from 'react';
-import { getProductById } from '@/app/models/products';
 import ProductDetail from '@/app/components/ProductDetail';
 import { notFound } from 'next/navigation';
 
@@ -11,27 +10,31 @@ export default function ProductPage({ params }) {
   
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // In a real app, this would fetch from an API
-    const fetchProduct = () => {
+    const fetchProduct = async () => {
       setLoading(true);
       try {
-        const productData = getProductById(unwrappedParams.id);
-        if (!productData) {
-          notFound();
+        const response = await fetch(`/api/admin/products/${unwrappedParams.id}`);
+        const result = await response.json();
+        
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to fetch product');
         }
-        setProduct(productData);
+        
+        setProduct(result.data);
       } catch (error) {
         console.error('Error fetching product:', error);
-        notFound();
+        setError(error.message);
+        // We'll handle the notFound in the render phase
       } finally {
         setLoading(false);
       }
     };
 
     fetchProduct();
-  }, [unwrappedParams.id]); // ← Changed this line
+  }, [unwrappedParams.id]);
 
   if (loading) {
     return (
@@ -41,7 +44,7 @@ export default function ProductPage({ params }) {
     );
   }
 
-  if (!product) {
+  if (error || !product) {
     return notFound();
   }
 

@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function AdminLogin() {
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -15,31 +14,25 @@ export default function AdminLogin() {
     setIsLoading(true);
     setError('');
     
-    try {
-      const response = await fetch('/api/admin/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
+    // Simple password check
+    if (password === '1234') {
+      // Store authentication in memory (component state will reset on page refresh)
+      const adminData = {
+        authenticated: true,
+        timestamp: new Date().toISOString()
+      };
       
-      const data = await response.json();
-      
-      if (data.success) {
-        // Store admin data in session storage
-        sessionStorage.setItem('adminAuthenticated', 'true');
-        sessionStorage.setItem('adminData', JSON.stringify(data.data));
-        router.push('/admin/dashboard');
-      } else {
-        setError(data.error || 'Login failed');
+      // Using a simple flag - note: this is not secure for production
+      if (typeof window !== 'undefined') {
+        window.adminAuth = true;
       }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-      console.error('Login error:', err);
-    } finally {
-      setIsLoading(false);
+      
+      router.push('/admin/dashboard');
+    } else {
+      setError('Incorrect password');
     }
+    
+    setIsLoading(false);
   };
 
   return (
@@ -54,20 +47,6 @@ export default function AdminLogin() {
         )}
         
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="username" className="block text-gray-700 mb-2">
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black"
-              required
-            />
-          </div>
-          
           <div className="mb-4">
             <label htmlFor="password" className="block text-gray-700 mb-2">
               Password

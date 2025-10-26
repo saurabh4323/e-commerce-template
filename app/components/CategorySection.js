@@ -8,8 +8,8 @@ export default function CategorySection() {
       image: 'https://prettiq.in/cdn/shop/files/b35f3313-f80a-45fa-9725-4cc015f4bd4d.jpg?v=1731842688' 
     },
     { 
-      name: 'BEST SELLERS', 
-      link: '/best-sellers', 
+      name: 'self love', 
+      link: '/self-love', 
       image: 'https://rubans.in/cdn/shop/files/18kt-gold-plated-stainless-steel-tarnish-free-waterproof-curved-hoop-earrings-earrings-36848040542382.jpg?v=1755720077' 
     },
     { 

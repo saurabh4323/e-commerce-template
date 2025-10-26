@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import ProductCard from './ProductCard';
-import { getProductsByCategory } from '../models/products';
 
 export default function CategoryPage({ category }) {
   const [products, setProducts] = useState([]);
@@ -10,23 +9,34 @@ export default function CategoryPage({ category }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // In a real app, this would fetch from an API
-    const fetchProducts = () => {
+    const fetchProducts = async () => {
       setLoading(true);
-      const categoryProducts = getProductsByCategory(category);
-      
-      // Sort products based on selected option
-      let sortedProducts = [...categoryProducts];
-      if (sortBy === 'price-low') {
-        sortedProducts.sort((a, b) => a.price - b.price);
-      } else if (sortBy === 'price-high') {
-        sortedProducts.sort((a, b) => b.price - a.price);
-      } else if (sortBy === 'rating') {
-        sortedProducts.sort((a, b) => b.rating - a.rating);
+      try {
+        // Fetch products from API with category filter
+        const response = await fetch(`/api/admin/products?category=${category}`);
+        const result = await response.json();
+        
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to fetch products');
+        }
+        
+        // Sort products based on selected option
+        let sortedProducts = [...result.data];
+        if (sortBy === 'price-low') {
+          sortedProducts.sort((a, b) => a.price - b.price);
+        } else if (sortBy === 'price-high') {
+          sortedProducts.sort((a, b) => b.price - a.price);
+        } else if (sortBy === 'rating') {
+          sortedProducts.sort((a, b) => b.rating - a.rating);
+        }
+        
+        setProducts(sortedProducts);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setProducts([]);
+      } finally {
+        setLoading(false);
       }
-      
-      setProducts(sortedProducts);
-      setLoading(false);
     };
 
     fetchProducts();
